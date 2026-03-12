@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merge Sort — Divide &amp; Conquer Visualizer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Confetti overlay -->
+<canvas id="confetti-canvas"></canvas>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<!-- Keyboard shortcuts modal -->
+<div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+        <h3>⌨️ Keyboard Shortcuts</h3>
+        <table>
+            <tr><td>Play / Pause</td><td><span class="kbd">Space</span></td></tr>
+            <tr><td>Next Step</td><td><span class="kbd">→</span> or <span class="kbd">N</span></td></tr>
+            <tr><td>Reset</td><td><span class="kbd">R</span></td></tr>
+            <tr><td>Random Array</td><td><span class="kbd">G</span></td></tr>
+            <tr><td>Toggle Theme</td><td><span class="kbd">T</span></td></tr>
+            <tr><td>Toggle Sound</td><td><span class="kbd">S</span></td></tr>
+            <tr><td>Speed Up</td><td><span class="kbd">+</span></td></tr>
+            <tr><td>Slow Down</td><td><span class="kbd">-</span></td></tr>
+            <tr><td>This Help</td><td><span class="kbd">H</span> or <span class="kbd">?</span></td></tr>
+        </table>
+        <button class="close-modal" id="modal-close">Close</button>
+    </div>
+</div>
+
+<header>
+    <h1><span>Merge Sort</span> — Divide &amp; Conquer Visualizer</h1>
+    <p>Interactive step-by-step animation with time complexity analysis</p>
+    <p style="margin-top:8px;font-size:.82rem;color:var(--muted)">Ayush Kumar Sharma &nbsp;|&nbsp; RA2411003011922 &nbsp;|&nbsp; Section J2 &nbsp;|&nbsp; Faculty: Dr. Kishore Anthuvan Sahayaraj K</p>
+    <div class="header-actions">
+        <button class="icon-btn" id="btnTheme" title="Toggle dark/light theme (T)">☀️</button>
+        <button class="icon-btn active" id="btnSound" title="Toggle sound (S)">🔊</button>
+        <button class="icon-btn" id="btnHelp" title="Keyboard shortcuts (H)">❓</button>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- ─── D&C Explanation (collapsible) ────────────────── -->
+    <div class="card card-collapsible" style="margin-bottom: 24px;">
+        <div class="card-header">
+            <h2><span class="dot" style="background:var(--accent)"></span> How Merge Sort Works</h2>
+            <span class="chevron">▼</span>
+        </div>
+        <div class="card-body">
+            <div class="steps-grid">
+                <div class="step-card">
+                    <h3><span class="step-icon">✂️</span> <span style="color:var(--divide)">Divide</span></h3>
+                    <p>Split the unsorted array into two roughly equal halves. Keep splitting recursively until each sub-array has only one element (which is trivially sorted).</p>
+                </div>
+                <div class="step-card">
+                    <h3><span class="step-icon">🎯</span> <span style="color:var(--conquer)">Conquer</span></h3>
+                    <p>Each single-element sub-array is already sorted — this is the base case. The "conquering" happens implicitly when we reach arrays of size 1.</p>
+                </div>
+                <div class="step-card">
+                    <h3><span class="step-icon">🔗</span> <span style="color:var(--combine)">Combine</span></h3>
+                    <p>Merge two sorted halves back together by comparing elements one by one, producing a single sorted sub-array. Repeat upward until the full array is sorted.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── Controls ─────────────────────────────────────── -->
+    <div class="card" style="margin-bottom: 24px;">
+        <div class="controls">
+            <div>
+                <label>Array (comma-separated)</label><br>
+                <input type="text" id="arrayInput" value="38, 27, 43, 3, 9, 82, 10" placeholder="e.g. 38, 27, 43, 3, 9, 82, 10">
+            </div>
+            <div>
+                <label>Size</label><br>
+                <div class="size-control">
+                    <input type="range" id="sizeSlider" min="4" max="20" value="7">
+                    <span class="speed-display" id="sizeLabel">7</span>
+                </div>
+            </div>
+            <div>
+                <label>Speed</label><br>
+                <div style="display:flex;align-items:center;gap:6px;">
+                    <input type="range" id="speedSlider" min="1" max="10" value="5">
+                    <span class="speed-display" id="speedLabel">5</span>
+                </div>
+            </div>
+            <button class="btn btn-primary pulse" id="btnStart">▶ Start <span class="kbd">Space</span></button>
+            <button class="btn btn-secondary" id="btnStep">⏭ Step <span class="kbd">N</span></button>
+            <button class="btn btn-secondary" id="btnPause" disabled>⏸ Pause</button>
+            <button class="btn btn-danger" id="btnReset">↺ Reset <span class="kbd">R</span></button>
+            <button class="btn btn-success" id="btnRandom">🎲 Random <span class="kbd">G</span></button>
+            <span class="counter">Step <span id="step-counter">0</span></span>
+        </div>
+        <div class="progress-wrap">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <!-- ─── Visualization Area ───────────────────────────── -->
+    <div class="grid grid-2">
+        <!-- Bar Chart -->
+        <div class="card">
+            <h2><span class="dot" style="background:var(--accent)"></span> Array State</h2>
+            <div id="bar-container"></div>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-color" style="background:var(--bar)"></div> Default</div>
+                <div class="legend-item"><div class="legend-color" style="background:var(--bar-active)"></div> Active / Dividing</div>
+                <div class="legend-item"><div class="legend-color" style="background:var(--bar-compare)"></div> Comparing</div>
+                <div class="legend-item"><div class="legend-color" style="background:var(--bar-sorted)"></div> Sorted / Merged</div>
+            </div>
+        </div>
+
+        <!-- Pseudocode + Step Log -->
+        <div class="card">
+            <h2><span class="dot" style="background:var(--accent2)"></span> Pseudocode &amp; Log</h2>
+            <div id="pseudocode" style="margin-bottom:16px;"></div>
+            <h2 style="font-size:.95rem; margin-top:8px;"><span class="dot" style="background:var(--conquer)"></span> Step-by-Step Log</h2>
+            <div id="step-log"><span style="color:var(--muted)">Press <strong>Start</strong> or <strong>Step</strong> to begin…</span></div>
+        </div>
+    </div>
+
+    <!-- ─── Recursion Tree (collapsible) ─────────────────── -->
+    <div class="card card-collapsible" style="margin-top:24px;">
+        <div class="card-header">
+            <h2><span class="dot" style="background:var(--divide)"></span> Recursion Tree</h2>
+            <span class="chevron">▼</span>
+        </div>
+        <div class="card-body">
+            <div id="tree-container"><span style="color:var(--muted)">The recursion tree will appear here as the algorithm runs.</span></div>
+        </div>
+    </div>
+
+    <!-- ─── Time Complexity (collapsible) ────────────────── -->
+    <div class="card card-collapsible" style="margin-top:24px;">
+        <div class="card-header">
+            <h2><span class="dot" style="background:var(--conquer)"></span> Time Complexity Analysis</h2>
+            <span class="chevron">▼</span>
+        </div>
+        <div class="card-body">
+            <div class="formula">
+                <span class="label">Recurrence Relation</span>
+                T(n) = 2 · T(n/2) + O(n)<br>
+                <span style="color:var(--muted)">where O(n) is the cost of merging two halves</span>
+            </div>
+
+            <div class="formula">
+                <span class="label">Solving via Master Theorem (Case 2: a = 2, b = 2, k = 1)</span>
+                a = 2, b = 2 &nbsp;→&nbsp; log<sub>b</sub>(a) = log<sub>2</sub>(2) = 1 = k<br>
+                ∴ T(n) = O(n<sup>k</sup> · log n) = <strong style="color:var(--accent)">O(n log n)</strong>
+            </div>
+
+            <div class="formula">
+                <span class="label">Solving by Recursion Tree</span>
+                • Depth of tree = log<sub>2</sub>(n)<br>
+                • Work at each level = O(n) &nbsp;(all merges at one level touch every element once)<br>
+                • Total = O(n) × log<sub>2</sub>(n) = <strong style="color:var(--accent)">O(n log n)</strong>
+            </div>
+
+            <table class="complexity-table">
+                <thead>
+                    <tr><th>Case</th><th>Complexity</th><th>When?</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="tag tag-best">Best</span></td>
+                        <td>O(n log n)</td>
+                        <td>Always — Merge Sort divides &amp; merges regardless of input order</td>
+                    </tr>
+                    <tr>
+                        <td><span class="tag tag-avg">Average</span></td>
+                        <td>O(n log n)</td>
+                        <td>All random permutations</td>
+                    </tr>
+                    <tr>
+                        <td><span class="tag tag-worst">Worst</span></td>
+                        <td>O(n log n)</td>
+                        <td>Always — even fully reverse-sorted input</td>
+                    </tr>
+                    <tr>
+                        <td>Space</td>
+                        <td>O(n)</td>
+                        <td>Temporary arrays for merging</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="formula" id="live-stats" style="margin-top: 16px;">
+                <span class="label">Live Statistics (updated during animation)</span>
+                <span id="stats-text">Run the visualization to see live stats.</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    Merge Sort Visualizer &mdash; DAA Activity &mdash; Divide &amp; Conquer<br>
+    Ayush Kumar Sharma &nbsp;|&nbsp; RA2411003011922 &nbsp;|&nbsp; Section J2 &nbsp;|&nbsp; Faculty: Dr. Kishore Anthuvan Sahayaraj K
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
