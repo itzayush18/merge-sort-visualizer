@@ -1,6 +1,6 @@
 # Merge Sort — Divide & Conquer Visualizer
 
-🔗 **Live Demo:** [https://ayushsharma-1.github.io/merge-sort-visualizer/](https://ayushsharma-1.github.io/merge-sort-visualizer/)
+🔗 **Live Demo:** [https://itzayush18.github.io/merge-sort-visualizer/](https://itzayush18.github.io/merge-sort-visualizer/)
 
 | | |
 |---|---|
