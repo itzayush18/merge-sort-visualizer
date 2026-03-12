@@ -1,4 +1,4 @@
-# Merge Sort — Divide & Conquer Visualizer
+# Merge Sort: Divide and Conquer Visualizer
 
 🔗 **Live Demo:** [https://itzayush18.github.io/merge-sort-visualizer/](https://itzayush18.github.io/merge-sort-visualizer/)
 
@@ -17,23 +17,23 @@ A web-based visualizer that animates the **Merge Sort** algorithm step by step, 
 
 ## File Structure
 
-- `index.html` — Page layout and structure
-- `styles.css` — Styling, themes, and animations
-- `script.js` — Algorithm logic, rendering, and user interaction
+- `index.html`: Page layout and structure
+- `styles.css`: Styling, themes, and animations
+- `script.js`: Algorithm logic, rendering, and user interaction
 
 ## Implementation Logic
 
 The app **pre-computes** the entire Merge Sort execution into an array of step objects before any animation begins. Each step records the array state, the operation type (divide / compare / merge), and metadata for the recursion tree. The animation engine then replays these steps one by one.
 
-### Algorithm — Divide and Conquer
+### Algorithm: Divide and Conquer
 
-1. **Divide** — Recursively split the array into two halves until each sub-array has one element.
-2. **Conquer** — Single-element sub-arrays are already sorted (base case).
-3. **Combine** — Merge two sorted halves by comparing elements one by one, producing a sorted sub-array. Repeat upward until the full array is sorted.
+1. **Divide**: Recursively split the array into two halves until each sub-array has one element.
+2. **Conquer**: Single-element sub-arrays are already sorted (base case).
+3. **Combine**: Merge two sorted halves by comparing elements one by one, producing a sorted sub-array. Repeat upward until the full array is sorted.
 
 ### Visualization
 
-- **Bar chart** reflects the array state at each step — red (dividing), yellow (comparing), green (merged).
+- **Bar chart** reflects the array state at each step: red (dividing), yellow (comparing), green (merged).
 - **Recursion tree** builds progressively, showing divide levels going down and combine levels going up.
 - **Pseudocode panel** highlights the active line of the algorithm at each step.
 - **Step log** records every operation in text form.
@@ -42,7 +42,7 @@ The app **pre-computes** the entire Merge Sort execution into an array of step o
 
 ```
 Recurrence:  T(n) = 2·T(n/2) + O(n)
-Solution:    O(n log n)  — via Master Theorem (a=2, b=2, Case 2)
+Solution:    O(n log n), via Master Theorem (a=2, b=2, Case 2)
 ```
 
 | Case | Time | Space |
